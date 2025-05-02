@@ -8,4 +8,5 @@ export interface Account {
   email: string;
   role: Role;
   jwtToken?: string;
+  status?: 'Active' | 'Inactive';
 }
