@@ -19,6 +19,9 @@
                 <a class="nav-item nav-link" routerLink="/users" routerLinkActive="active" *ngIf="account?.role === Role.Admin">
                     <i class="fas fa-users"></i> Users
                 </a>
+                <a class="nav-item nav-link" routerLink="/admin/accounts" routerLinkActive="active" *ngIf="account?.role === 'Admin'">
+                    <i class="fas fa-user-shield"></i> Admin
+                </a>
                 <a class="nav-item nav-link" (click)="logout()" style="cursor: pointer;" *ngIf="account">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
