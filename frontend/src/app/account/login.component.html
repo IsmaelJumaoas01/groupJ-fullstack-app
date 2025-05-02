@@ -7,11 +7,30 @@
                     <p class="text-white-50 mb-0">Sign in to your account</p>
                 </div>
                 <div class="card-body p-4">
+                    <!-- Special messages for first user registration -->
+                    <div *ngIf="firstUserSuccess" class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ firstUserSuccess }}
+                        <button type="button" class="btn-close" (click)="firstUserSuccess = ''" aria-label="Close"></button>
+                    </div>
+                    <div *ngIf="firstUserInfo" class="alert alert-info alert-dismissible fade show" role="alert">
+                        <strong>First User Login</strong><br>
+                        {{ firstUserInfo }}<br>
+                        <small class="text-muted">NOTE: The fake backend displayed this "email" so you can test without an api. A real backend would send a real email.</small>
+                        <button type="button" class="btn-close" (click)="firstUserInfo = ''" aria-label="Close"></button>
+                    </div>
+
                     <!-- Error Alert -->
                     <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ error }}
                         <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Verification Link Alert -->
+                    <div *ngIf="showVerificationLink" class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="fas fa-envelope me-2"></i>
+                        Please check your email ({{ verificationEmail }}) for the verification link.
+                        <button type="button" class="btn-close" (click)="showVerificationLink = false" aria-label="Close"></button>
                     </div>
 
                     <form [formGroup]="form" (ngSubmit)="onSubmit()">

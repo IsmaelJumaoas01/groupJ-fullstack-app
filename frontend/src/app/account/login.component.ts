@@ -11,6 +11,10 @@ export class LoginComponent implements OnInit {
   loading = false;
   submitted = false;
   error = '';
+  showVerificationLink = false;
+  verificationEmail = '';
+  firstUserSuccess = '';
+  firstUserInfo = '';
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -24,6 +28,11 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+    // Read special messages from query params
+    this.route.queryParams.subscribe(params => {
+      this.firstUserSuccess = params['firstUserSuccess'] || '';
+      this.firstUserInfo = params['firstUserInfo'] || '';
+    });
   }
 
   get f() { return this.form.controls; }
@@ -31,6 +40,8 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     this.error = '';
+    this.showVerificationLink = false;
+    this.verificationEmail = '';
 
     if (this.form.invalid) {
       return;
@@ -46,6 +57,10 @@ export class LoginComponent implements OnInit {
         },
         error: error => {
           this.error = error;
+          if (error.includes('not verified')) {
+            this.showVerificationLink = true;
+            this.verificationEmail = this.f['email'].value;
+          }
           this.loading = false;
         }
       });
