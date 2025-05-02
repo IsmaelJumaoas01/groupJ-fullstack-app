@@ -11,6 +11,8 @@ export class RegisterComponent implements OnInit {
   form!: UntypedFormGroup;
   loading = false;
   submitted = false;
+  firstUserSuccess = '';
+  firstUserInfo = '';
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -40,8 +42,9 @@ export class RegisterComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
 
-
     this.alertService.clear();
+    this.firstUserSuccess = '';
+    this.firstUserInfo = '';
 
     if (this.form.invalid) {
       return;
@@ -51,7 +54,17 @@ export class RegisterComponent implements OnInit {
     this.accountService.register(this.form.value)
       .pipe(first())
       .subscribe({
-        next: () => {
+        next: (res: any) => {
+          if (res && res.firstUserInfo) {
+            this.router.navigate(['../login'], {
+              relativeTo: this.route,
+              queryParams: {
+                firstUserSuccess: res.message,
+                firstUserInfo: res.firstUserInfo
+              }
+            });
+            return;
+          }
           this.alertService.success('Registration successful. Please check your email to verify your account.', { keepAfterRouteChange: true });
           this.router.navigate(['../login'], { relativeTo: this.route });
         },

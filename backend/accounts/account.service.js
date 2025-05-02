@@ -26,8 +26,16 @@ module.exports = {
 async function authenticate({ email, password, ipAddress }) {
     const account = await db.Account.scope('withHash').findOne({ where: { email } });
 
-    if (!account || !account.isVerified || !(await bcrypt.compare(password, account.passwordHash))) {
-        throw 'Email or password is incorrect';
+    if (!account) {
+        throw 'Email does not exist';
+    }
+
+    if (!account.isVerified) {
+        throw 'Email is not verified. Please check your email for verification link.';
+    }
+
+    if (!(await bcrypt.compare(password, account.passwordHash))) {
+        throw 'Password is incorrect';
     }
 
     // authentication successful so generate jwt and refresh tokens
@@ -55,10 +63,15 @@ async function register(params, origin) {
     // create account object
     const account = new db.Account(params);
 
-    // first registered account is an admin
+    // first registered account is an admin and auto-verified
     const isFirstAccount = (await db.Account.count()) === 0;
     account.role = isFirstAccount ? Role.Admin : Role.User;
     account.verificationToken = randomTokenString();
+    
+    // Auto-verify first account
+    if (isFirstAccount) {
+        account.verified = Date.now();
+    }
 
     // hash password
     account.passwordHash = await hash(params.password);
@@ -67,8 +80,12 @@ async function register(params, origin) {
         // save account
         await account.save();
         
-        // send email
-        await sendVerificationEmail(account, origin);
+        // send email only if not first account
+        if (!isFirstAccount) {
+            await sendVerificationEmail(account, origin);
+        }
+        // Return a flag for first account
+        return { isFirstAccount };
     } catch (error) {
         console.error('Registration error:', error);
         throw error;

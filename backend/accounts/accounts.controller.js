@@ -65,7 +65,15 @@ function registerSchema(req, res, next) {
 // Creates new user account and sends verification email
 function register(req, res, next) {
     accountService.register(req.body, req.get('origin'))
-        .then(() => res.json({ message: 'Registration successful, please check your email for verification instructions' }))
+        .then((result) => {
+            if (result && result.isFirstAccount) {
+                return res.json({
+                    message: 'Admin registration successful. You can login directly.',
+                    firstUserInfo: 'You can login directly as first user where role is Admin and account is verified.'
+                });
+            }
+            res.json({ message: 'Registration successful, please check your email for verification instructions' });
+        })
         .catch(next);
 }
 
