@@ -230,7 +230,8 @@ function updateSchema(req, res, next) {
       lastName: Joi.string().empty(''),
       email: Joi.string().email().empty(''),
       password: Joi.string().min(6).empty(''),
-      confirmPassword: Joi.string().valid(Joi.ref('password')).empty('')
+      confirmPassword: Joi.string().valid(Joi.ref('password')).empty(''),
+      status: Joi.string().valid('Active', 'Inactive').empty('')
     };
   
     if (req.user.role === Role.Admin) {

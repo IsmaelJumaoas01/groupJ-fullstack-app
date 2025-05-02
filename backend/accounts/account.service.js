@@ -30,6 +30,10 @@ async function authenticate({ email, password, ipAddress }) {
         throw 'Email does not exist';
     }
 
+    if (account.status !== 'Active') {
+        throw 'Account is inactive. Please contact the administrator.';
+    }
+
     if (!account.isVerified) {
         throw 'Email is not verified. Please check your email for verification link.';
     }
@@ -126,8 +130,8 @@ function randomTokenString() {
 }
 
 function basicDetails(account) {
-    const { id, title, firstName, lastName, email, role, created, updated, isVerified } = account;
-    return { id, title, firstName, lastName, email, role, created, updated, isVerified };
+    const { id, title, firstName, lastName, email, role, created, updated, isVerified, status } = account;
+    return { id, title, firstName, lastName, email, role, created, updated, isVerified, status };
 }
 
 async function sendVerificationEmail(account, origin) {

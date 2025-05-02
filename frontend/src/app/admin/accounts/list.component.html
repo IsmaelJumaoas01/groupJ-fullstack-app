@@ -10,6 +10,7 @@
             <th style="width:30%">Name</th>
             <th style="width:30%">Email</th>
             <th style="width:30%">Role</th>
+            <th style="width:10%">Status</th>
             <th style="width:10%"></th>
         </tr>
     </thead>
@@ -18,12 +19,13 @@
             <td>{{account.title}} {{account.firstName}} {{account.lastName}}</td>
             <td>{{account.email}}</td>
             <td>{{account.role}}</td>
+            <td>
+                <span class="badge" [ngClass]="{'bg-success': account.status === 'Active', 'bg-secondary': account.status !== 'Active'}">
+                    {{account.status || 'Active'}}
+                </span>
+            </td>
             <td style="white-space: nowrap">
-                <a routerLink="edit/{{account.id}}" class="btn btn-sm btn-primary mr-1">Edit</a>
-                <button (click)="deleteAccount(account.id)" class="btn btn-sm btn-danger btn-delete-account" [disabled]="account.isDeleting">
-                    <span *ngIf="account.isDeleting" class="spinner-border spinner-border-sm"></span>
-                    <span *ngIf="!account.isDeleting">Delete</span>
-                </button>
+                <button (click)="openEditModal(account)" class="btn btn-sm btn-primary mr-1">Edit</button>
             </td>
         </tr>
         <tr *ngIf="!accounts">
@@ -33,3 +35,77 @@
         </tr>
     </tbody>
 </table>
+
+<!-- Modal for editing account -->
+<div class="modal fade show" tabindex="-1" [ngStyle]="{display: showModal ? 'block' : 'none', background: showModal ? 'rgba(0,0,0,0.5)' : 'none'}" *ngIf="showModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Account</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div *ngIf="alertMsg" class="alert alert-info">{{ alertMsg }}</div>
+          <div class="mb-2">
+            <label>Title</label>
+            <select formControlName="title" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
+              <option value="Mr">Mr</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Miss">Miss</option>
+              <option value="Ms">Ms</option>
+            </select>
+            <div *ngIf="submitted && f.title.errors" class="invalid-feedback">Title is required</div>
+          </div>
+          <div class="mb-2">
+            <label>First Name</label>
+            <input type="text" formControlName="firstName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }" />
+            <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">First Name is required</div>
+          </div>
+          <div class="mb-2">
+            <label>Last Name</label>
+            <input type="text" formControlName="lastName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }" />
+            <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">Last Name is required</div>
+          </div>
+          <div class="mb-2">
+            <label>Email</label>
+            <input type="email" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+            <div *ngIf="submitted && f.email.errors" class="invalid-feedback">Valid email is required</div>
+          </div>
+          <div class="mb-2">
+            <label>Role</label>
+            <select formControlName="role" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.role.errors }">
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <div *ngIf="submitted && f.role.errors" class="invalid-feedback">Role is required</div>
+          </div>
+          <div class="mb-2">
+            <label>Status</label>
+            <select formControlName="status" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+            <div *ngIf="submitted && f.status.errors" class="invalid-feedback">Status is required</div>
+          </div>
+          <div class="mb-2">
+            <label>Password</label>
+            <input type="password" formControlName="password" class="form-control" />
+            <small class="form-text text-muted">Leave blank to keep the same password</small>
+          </div>
+          <div class="mb-2">
+            <label>Confirm Password</label>
+            <input type="password" formControlName="confirmPassword" class="form-control" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
