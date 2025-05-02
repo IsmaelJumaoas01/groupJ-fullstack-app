@@ -1,4 +1,4 @@
-# User Management System
+# User Management Systems
 
 A modern web application for user management with email verification, authentication, and password reset functionality.
 
