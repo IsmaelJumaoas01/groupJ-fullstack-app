@@ -25,6 +25,9 @@
                 <a class="nav-item nav-link" (click)="showDetails()" style="cursor: pointer;">
                     <i class="fas fa-info-circle"></i> Details
                 </a>
+                <a class="nav-item nav-link" routerLink="/profile" routerLinkActive="active" *ngIf="account">
+                    <i class="fas fa-user"></i> Profile
+                </a>
             </div>
         </div>
     </nav>
